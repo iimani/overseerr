@@ -225,7 +225,8 @@ export type JobId =
   | 'radarr-scan'
   | 'sonarr-scan'
   | 'download-sync'
-  | 'download-sync-reset';
+  | 'download-sync-reset'
+  | 'timed-auto-approve';
 
 interface AllSettings {
   clientId: string;
@@ -376,6 +377,9 @@ class Settings {
           schedule: '0 * * * * *',
         },
         'download-sync-reset': {
+          schedule: '0 0 1 * * *',
+        },
+        'timed-auto-approve': {
           schedule: '0 0 1 * * *',
         },
       },

@@ -5,6 +5,7 @@ import { radarrScanner } from '../lib/scanners/radarr';
 import { sonarrScanner } from '../lib/scanners/sonarr';
 import { getSettings, JobId } from '../lib/settings';
 import logger from '../logger';
+import autoapprover from '../lib/autoapprover';
 
 interface ScheduledJob {
   id: JobId;
@@ -79,6 +80,20 @@ export const startJobs = (): void => {
     }),
     running: () => sonarrScanner.status().running,
     cancelFn: () => sonarrScanner.cancel(),
+  });
+
+  // Try auto-approve pending requests every 5min
+  scheduledJobs.push({
+    id: 'timed-auto-approve',
+    name: 'Timed Auto Approve',
+    type: 'process',
+    interval: 'long',
+    job: schedule.scheduleJob(jobs['timed-auto-approve'].schedule, () => {
+      logger.info('Starting scheduled job: Timed Auto Approve', {
+        label: 'Jobs',
+      });
+      autoapprover.autoApprove();
+    }),
   });
 
   // Run download sync every minute
